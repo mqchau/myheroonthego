@@ -19,7 +19,7 @@ def extract_story_info(html_string):
 	all_herotext = soup.find_all('div', id='heroText')
 	all_td_herotext = map(lambda x: x.parent, all_herotext)
 	all_story_info = map(lambda x: {
-		'imglink' : x.find('img')['src']
+		'imglink' : x.find('img') is None ? '' : x.find('img')['src']
 		}, all_td_herotext)
 	return all_story_info 
 
