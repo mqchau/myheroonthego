@@ -84,3 +84,7 @@ if __name__ == "__main__":
 				html_string = f.read()
 			all_stories = extract_story_info(html_string)
 			pp.pprint(all_stories)
+		elif int(args.debug) == 4:
+			#get all stories of a specific type, let's test with women 
+			all_stories = get_story_in_type('page.asp?dir=women')
+			pp.pprint(all_stories)
