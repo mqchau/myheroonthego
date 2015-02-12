@@ -1,8 +1,28 @@
+import pprint
 import requests
 from bs4 import BeautifulSoup
+import argparse
 
-r = requests.get('http://myhero.com/directory')
-r = requests.get('http://myhero.com/directory/page.asp', params={'dir': 'lifesaver'})
+if __name__ == "__main__":
+	pp = pprint.PrettyPrinter(indent=3)
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--debug", required=True, help="Debug option")
 
-soup = BeautifulSoup(r.text)
-print (soup.prettify())
+	args = parser.parse_args()
+
+	if "debug" in args:
+		if int(args.debug) == 0:
+			#do http get of list of stories type
+			r = requests.get('http://myhero.com/directory')
+			print type(r.text)
+			with open("story_types.html", "w") as f:
+				f.write(r.text.encode('utf8'))
+		elif int(args.debug) == 1:
+			#load the list of stories in html format and parse it
+			with open("story_types.html", "r") as f:
+				html_string = f.read()
+			soup = BeautifulSoup(html_string)
+		#	print (soup.prettify())
+			all_essayttl = soup.find_all("essayttl")
+			all_essayttl_parent = map(lambda x: x.parent, all_essayttl)
+			pp.pprint(all_essayttl_parent)
