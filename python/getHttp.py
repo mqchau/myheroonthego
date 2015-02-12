@@ -3,6 +3,13 @@ import requests
 from bs4 import BeautifulSoup
 import argparse
 
+def extract_type_description(x):
+	return {
+		"type": x.find("essayttl").contents[0]
+		,"description": x.contents[-1].strip()
+		}
+
+
 if __name__ == "__main__":
 	pp = pprint.PrettyPrinter(indent=3)
 	parser = argparse.ArgumentParser()
@@ -25,4 +32,5 @@ if __name__ == "__main__":
 		#	print (soup.prettify())
 			all_essayttl = soup.find_all("essayttl")
 			all_essayttl_parent = map(lambda x: x.parent, all_essayttl)
-			pp.pprint(all_essayttl_parent)
+			all_essayttl_profile = map(extract_type_description, all_essayttl_parent)
+			pp.pprint(all_essayttl_profile)
