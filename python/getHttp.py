@@ -8,11 +8,20 @@ def save_html(file_name, html_string):
 	with open(file_name + ".html", "w") as f:
 		f.write(html_string.encode('utf8'))
 		
-def get_story_in_type(type_str):
-	r = requests.get('http://myhero.com/directory/page.asp', params={'dir': type_str})
+def get_story_in_type(type_link):
+	r = requests.get('http://myhero.com/directory/' + type_link)
 	soup = BeautifulSoup(r.text)
 	save_html('aids_stories', r.text)
 	return None
+
+def extract_story_info(html_string):
+	soup = BeautifulSoup(html_string)
+	all_herotext = soup.find_all('div', id='heroText')
+	all_td_herotext = map(lambda x: x.parent, all_herotext)
+	all_story_info = map(lambda x: {
+		'imglink' : x.find('img')['src']
+		}, all_td_herotext)
+	return all_story_info 
 
 def get_story_type_description():
 	r = requests.get('http://myhero.com/directory')
@@ -50,5 +59,11 @@ if __name__ == "__main__":
 			pp.pprint(all_story_type_description)
 		elif int(args.debug) == 2:
 			#get all stories of a specific type, let's test with aids
-			all_stories = get_story_in_type('aids')
+			all_stories = get_story_in_type('page.asp?dir=aids')
+			pp.pprint(all_stories)
+		elif int(args.debug) == 4:
+			#extract info from stories page
+			with open("aids_stories.html", 'r') as f:
+				html_string = f.read()
+			all_stories = extract_story_info(html_string)
 			pp.pprint(all_stories)
