@@ -4,22 +4,39 @@ import requests
 from bs4 import BeautifulSoup
 import argparse
 
+from HTMLParser import HTMLParser
+
+class MLStripper(HTMLParser):
+	def __init__(self):
+		self.reset()
+		self.fed = []
+	def handle_data(self, d):
+		self.fed.append(d)
+	def get_data(self):
+		return ''.join(self.fed)
+
+def strip_tags(html):
+	s = MLStripper()
+	s.feed(html)
+	return s.get_data()
+
 def save_html(file_name, html_string):
 	with open(file_name + ".html", "w") as f:
 		f.write(html_string.encode('utf8'))
 		
 def get_story_in_type(type_link):
 	r = requests.get('http://myhero.com/directory/' + type_link)
-	soup = BeautifulSoup(r.text)
-	save_html('aids_stories', r.text)
-	return None
+	return extract_story_info(r.text)
 
 def extract_story_info(html_string):
 	soup = BeautifulSoup(html_string)
 	all_herotext = soup.find_all('div', id='heroText')
 	all_td_herotext = map(lambda x: x.parent, all_herotext)
 	all_story_info = map(lambda x: {
-		'imglink' : x.find('img') is None ? '' : x.find('img')['src']
+		'imglink' : x.find('img')['src'] if x.find('img') is not None else '' 
+		,'storylink' : x.find('a')['href']
+		,'name' : strip_tags(x.find('strong').__str__())
+		,'description': x.find('font').contents[0] if len(x.find('font').contents) > 0 else ''
 		}, all_td_herotext)
 	return all_story_info 
 
@@ -61,7 +78,7 @@ if __name__ == "__main__":
 			#get all stories of a specific type, let's test with aids
 			all_stories = get_story_in_type('page.asp?dir=aids')
 			pp.pprint(all_stories)
-		elif int(args.debug) == 4:
+		elif int(args.debug) == 3:
 			#extract info from stories page
 			with open("aids_stories.html", 'r') as f:
 				html_string = f.read()
