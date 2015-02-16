@@ -27,7 +27,6 @@ def extract_art_medium(html_string):
 #PUBLIC: get a list of art in a medium type
 def get_art_list(medium, page=1):
 	r = requests.get('http://myhero.com/gallery/list.asp?', params={'keyword': medium, 'p' : page})
-	print r.url
 	return extract_art_list(r.text)
 
 def extract_art_list(html_string):
@@ -39,6 +38,33 @@ def extract_art_list(html_string):
 		,'name': reduce(lambda x,y: (strip_tags(x.__str__()).strip() if type(x) is not str else x) + ' ' + strip_tags(y.__str__()).strip(), x.find_all('span'))
 		}, all_art)
 	return all_art_info
+
+#PUBLIC: get info of a particular artwork
+def get_artwork(artkey):
+	r = requests.get('http://myhero.com/gallery/open.asp?', params={'art': artkey})
+	return extract_artwork(r.text)
+
+def extract_artwork(html_string):
+	soup = BeautifulSoup(html_string)
+	x = soup.find('div', id='artContainer')
+	spans = x.find_all('span')
+	title = ''; artist = ''; caption = ''; description = '';
+	for span in spans:
+		if span['class'] == 'gTitle':	
+			title = span.contents[0].__str__().strip()
+		elif span['class'] == 'gArtist':
+			artist = span.contents[0].__str__().strip()
+		elif span['class'] == 'gCaption':
+			caption = span.contents[0].__str__().strip()
+		elif span['class'] == 'gDescription':
+			description = span.contents[0].__str__().strip()
+
+	art_info = {
+		'imglink': x.find('img')['src'] if x.find('img') is not None else '' 
+		,'title': title, 'artist': artist, 'caption': caption, 'description': description
+		} 
+	return art_info
+
  
 if __name__ == "__main__":
 	pp = pprint.PrettyPrinter(indent=3)
@@ -56,4 +82,7 @@ if __name__ == "__main__":
 			#get a list of arts in a medium
 			art_list = get_art_list('Drawing', 2)
 			pp.pprint(art_list)
-		
+		elif int(args.debug) == 2:
+			#get detail of a particular artwork	
+			artwork = get_artwork('nate_visualizes')
+			pp.pprint(artwork)
