@@ -43,9 +43,9 @@ def extract_art_list(html_string):
 	all_art_info = map(lambda x: {
 		'imglink': DEFAULT_IMG_PREFIX + x.find('img')['src'] if x.find('img') is not None else '' 
 		,'artlink' : strip_artpiece_link(x.find('a')['href']) if x.find('a') is not None else ''
-		,'name': extract_art_name(x)
-		,'artist': extract_art_artist(x)
-		,'cap': extract_art_cap(x)
+		,'name': extract_by_spanclass(x, 'heroName') 
+		,'artist': extract_by_spanclass(x, 'heroArtist') 
+		,'cap': extract_by_spanclass(x, 'heroCap') 
 		}, all_art)
 	return all_art_info
 
@@ -57,27 +57,12 @@ def strip_artpiece_link(orig):
 	else:
 		return m.group(1)
 
-def extract_art_name(x):
+def extract_by_spanclass(x, classname):
 	name = ''
-	span = filter(lambda y: 'class' in y.attrs and 'heroName' in y['class'], x.find_all('span'))
+	span = filter(lambda y: 'class' in y.attrs and classname in y['class'], x.find_all('span'))
 	if len(span) > 0:
-		name = str(span[0].contents[0])
+		name = str(strip_tags(span[0].contents[0].encode('utf8')))
 	return name
-
-def extract_art_artist(x):
-	name = ''
-	span = filter(lambda y: 'class' in y.attrs and 'heroArtist' in y['class'], x.find_all('span'))
-	if len(span) > 0:
-		name = str(span[0].contents[0])
-	return name
-
-def extract_art_cap(x):
-	name = ''
-	span = filter(lambda y: 'class' in y.attrs and 'heroCap' in y['class'], x.find_all('span'))
-	if len(span) > 0:
-		name = str(span[0].contents[0])
-	return name
-
 
 #PUBLIC: get info of a particular artwork
 def get_artwork(artkey):
@@ -120,7 +105,7 @@ if __name__ == "__main__":
 			pp.pprint(art_medium_list)
 		elif int(args.debug) == 1:
 			#get a list of arts in a medium
-			art_list = get_art_list('Digital Imagery', 2)
+			art_list = get_art_list('Digital Imagery', 21)
 			pp.pprint(art_list)
 		elif int(args.debug) == 2:
 			#get detail of a particular artwork	
