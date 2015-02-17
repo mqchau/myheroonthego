@@ -18,11 +18,19 @@ def extract_art_medium(html_string):
 	all_td_art = all_art.find_all('td') 
 	all_art_info = map(lambda x: {
 		'imglink' : x.find('img')['src'] if x.find('img') is not None else '' 
-		,'artlink' : x.find('a')['href'] if x.find('a') is not None else ''
+		,'artlink' : strip_art_link(x.find('a')['href']) if x.find('a') is not None else ''
 		,'name' : strip_tags(x.find('span').__str__())
 		}, all_td_art)
 	all_art_info = filter(lambda x: len(x['artlink']) > 0, all_art_info)
 	return all_art_info 
+
+def strip_art_link(orig):
+	m = re.search("keyword=(.+)$", orig)
+	if m is None:
+		print orig
+		return orig
+	else:
+		return m.group(1)
 
 #PUBLIC: get a list of art in a medium type
 def get_art_list(medium, page=1):
@@ -80,7 +88,7 @@ if __name__ == "__main__":
 			pp.pprint(art_medium_list)
 		elif int(args.debug) == 1:
 			#get a list of arts in a medium
-			art_list = get_art_list('Drawing', 2)
+			art_list = get_art_list('Digital Imagery', 2)
 			pp.pprint(art_list)
 		elif int(args.debug) == 2:
 			#get detail of a particular artwork	
