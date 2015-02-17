@@ -61,10 +61,7 @@ def strip_story_category_link(orig):
 
 #PUBLIC: show the text and images in a story
 def get_story_content(story_link):
-	if re.search("^\.\.", story_link):
-		story_link = re.sub("^\.\.", "", story_link)
-	r = requests.get("http://myhero.com" + story_link)
-	save_html("onehero.html", r.text)
+	r = requests.get("http://myhero.com/hero.asp?hero=" + story_link)
 	return extract_story_conent(r.text)
  
 def extract_story_conent(html_string):
@@ -130,13 +127,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	if "debug" in args:
-		if int(args.debug) == 0:
-			#do http get of list of stories type
-			r = requests.get('http://myhero.com/directory')
-			print type(r.text)
-			with open("story_types.html", "w") as f:
-				f.write(r.text.encode('utf8'))
-		elif int(args.debug) == 1:
+		if int(args.debug) == 1:
 			#get all types of stories and their descriptions 
 			all_story_type_description = get_story_type_description()
 			pp.pprint(all_story_type_description)
@@ -144,22 +135,12 @@ if __name__ == "__main__":
 			#get all stories of a specific type, let's test with aids
 			all_stories = get_story_in_type('aids')
 			pp.pprint(all_stories)
-		elif int(args.debug) == 3:
-			#extract info from stories page
-			with open("aids_stories.html", 'r') as f:
-				html_string = f.read()
-			all_stories = extract_story_info(html_string)
-			pp.pprint(all_stories)
 		elif int(args.debug) == 4:
 			#get all stories of a specific type, let's test with women 
 			all_stories = get_story_in_type('women')
 			pp.pprint(all_stories)
 		elif int(args.debug) == 5:
 			#get story content of a specific hero
-			story_content = get_story_content('../hero.asp?hero=LAKHDAR')
+			story_content = get_story_content('LAKHDAR')
 			pp.pprint(story_content)
-		elif int(args.debug) == 6:
-			#extract story content of a hero
-			with open("onehero.html", 'r') as f:
-				html_string = f.read()
-			extract_story_conent(html_string)
+	
