@@ -40,6 +40,32 @@ def extract_link(x):
 		'imglink' : x.find('img')['src'] if x.find('img') is not None else '' 
 		,'movielink' : x.find('a')['href'] if x.find('a') is not None else ''
 		}
+
+#PUBLIC: get detail of a movie
+def get_movie(movie_name):
+	r = requests.get('http://myhero.com/films/view.asp', params={'film':movie_name})
+	return extract_movie_info(r.text)
+
+def extract_movie_info(html_string):
+	soup = BeautifulSoup(html_string)
+	title = ''; author = '';
+	spans = soup.find_all('span')
+	for span in spans:
+		if 'class' in span.attrs:
+			if span['class'] == 'filmTitle':
+				title = strip_tags(span.__str__()).strip()
+			elif span['class'] == 'filmAuthor':
+				author = strip_tags(span.__str__()).strip()
+		else:
+			print span
+	return {
+		'movielink': soup.find('source')['src']
+		,'overview': strip_tags(soup.find('div', id='overview').__str__()).strip() 
+		,'moreinfo': strip_tags(soup.find('div', id='info').__str__()).strip() 
+		,'bios': strip_tags(soup.find('div', id='bios').__str__()).strip() 
+		,'title': title
+		,'author': remove_non_ascii(author )
+	}
 	
 if __name__ == "__main__":
 	pp = pprint.PrettyPrinter(indent=3)
@@ -53,4 +79,8 @@ if __name__ == "__main__":
 			#get the list all movies by page number
 			movie_list = get_movie_list(2)
 			pp.pprint(movie_list)
+		elif int(args.debug) == 1:
+			#get the detail of a movie
+			movie = get_movie('Bay Cat')
+			pp.pprint(movie)
 

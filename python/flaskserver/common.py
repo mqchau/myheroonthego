@@ -21,3 +21,5 @@ def save_html(file_name, html_string):
 	with open(file_name + ".html", "w") as f:
 		f.write(html_string.encode('utf8'))
 
+def remove_non_ascii(text):
+	return ''.join(i for i in text if ord(i)<128)
