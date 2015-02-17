@@ -12,9 +12,11 @@ def return_all_story():
 
 @app.route('/storyList/<story_category>')
 def return_story_in_category(story_category):
-	print 'got ' + story_category
-	print json.dumps(myhero_story.get_story_in_type(story_category))
 	return json.dumps(myhero_story.get_story_in_type(story_category))
+
+@app.route('/story/<story_link>')
+def return_story_content(story_link):
+	return json.dumps(myhero_story.get_story_content(story_link))
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0')

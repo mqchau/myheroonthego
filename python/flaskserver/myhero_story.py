@@ -62,18 +62,13 @@ def strip_story_category_link(orig):
 #PUBLIC: show the text and images in a story
 def get_story_content(story_link):
 	r = requests.get("http://myhero.com/hero.asp?hero=" + story_link)
-	return extract_story_conent(r.text)
+	return extract_story_content(r.text)
  
-def extract_story_conent(html_string):
+def extract_story_content(html_string):
 	soup = BeautifulSoup(html_string)
 	table = soup.find('center').find('table').find('td')
 	all_content = decode_story_content_td(table)
-	#all_td = table.find_all('td')
-	#all_content = []
-	#for one_td_id in xrange(len(all_td)):
-	#	all_content.extend(decode_story_content_td(all_td[one_td_id]))
-	pp = pprint.PrettyPrinter(indent=3)
-	pp.pprint(all_content)
+	return all_content
 
 def decode_story_content_td(td):
 	#print "--------------------------------------------"
