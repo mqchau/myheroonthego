@@ -11,7 +11,7 @@ DEFAULT_IMG_PREFIX = "myhero.com"
 		
 #PUBLIC: show what stories in a category based on the tag
 def get_story_in_type(type_link):
-	r = requests.get('http://myhero.com/directory/' + type_link)
+	r = requests.get('http://myhero.com/directory/page.asp?dir=' + type_link)
 	return extract_story_info(r.text)
 
 def extract_story_info(html_string):
@@ -19,12 +19,20 @@ def extract_story_info(html_string):
 	all_herotext = soup.find_all('div', id='heroText')
 	all_td_herotext = map(lambda x: x.parent, all_herotext)
 	all_story_info = map(lambda x: {
-		'imglink' : x.find('img')['src'] if x.find('img') is not None else '' 
-		,'storylink' : x.find('a')['href']
+		'imglink' : DEFAULT_IMG_PREFIX + x.find('img')['src'] if x.find('img') is not None else '' 
+		,'storylink' : strip_story_link(x.find('a')['href'])
 		,'name' : strip_tags(x.find('strong').__str__())
 		,'description': x.find('font').contents[0] if len(x.find('font').contents) > 0 else ''
 		}, all_td_herotext)
 	return all_story_info 
+
+def strip_story_link(orig):
+	m = re.search("hero=(.+)$", orig)
+	if m is None:
+		print orig
+		return orig
+	else:
+		return m.group(1)
 
 #PUBLIC: show all stories categories and their description
 def get_story_type_description():
@@ -134,7 +142,7 @@ if __name__ == "__main__":
 			pp.pprint(all_story_type_description)
 		elif int(args.debug) == 2:
 			#get all stories of a specific type, let's test with aids
-			all_stories = get_story_in_type('page.asp?dir=aids')
+			all_stories = get_story_in_type('aids')
 			pp.pprint(all_stories)
 		elif int(args.debug) == 3:
 			#extract info from stories page
@@ -144,7 +152,7 @@ if __name__ == "__main__":
 			pp.pprint(all_stories)
 		elif int(args.debug) == 4:
 			#get all stories of a specific type, let's test with women 
-			all_stories = get_story_in_type('page.asp?dir=women')
+			all_stories = get_story_in_type('women')
 			pp.pprint(all_stories)
 		elif int(args.debug) == 5:
 			#get story content of a specific hero
