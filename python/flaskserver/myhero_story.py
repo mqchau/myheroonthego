@@ -66,9 +66,26 @@ def get_story_content(story_link):
  
 def extract_story_content(html_string):
 	soup = BeautifulSoup(html_string)
+	#find the title
+	title_area = soup.find('div', id='titleArea')
+	heroCat = ''; nameCat = ''; authorCat = '';
+	for i in title_area.find_all('div'):
+		#print str(i) + "  " + str(i.attrs['class'])
+		if 'heroCat' in i['class']:
+			heroCat = i.contents[0]
+		elif 'nameCat' in i['class']:
+			nameCat = i.contents[0]
+		elif 'authorCat' in i['class']:
+			authorCat = i.contents[0]
+	#find the content
 	table = soup.find('center').find('table').find('td')
 	all_content = decode_story_content_td(table)
-	return all_content
+	return {
+		'heroCat': heroCat,
+		'nameCat': nameCat,
+		'authorCat': authorCat,
+		'content' : all_content
+		}
 
 def decode_story_content_td(td):
 	#print "--------------------------------------------"
