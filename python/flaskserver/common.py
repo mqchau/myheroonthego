@@ -1,5 +1,6 @@
 from HTMLParser import HTMLParser
 
+DEFAULT_IMG_PREFIX = "myhero.com"
 
 
 #supporint files

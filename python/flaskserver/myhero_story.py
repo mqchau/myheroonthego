@@ -7,7 +7,6 @@ from common import *
 
 from HTMLParser import HTMLParser
 
-DEFAULT_IMG_PREFIX = "myhero.com"
 		
 #PUBLIC: show what stories in a category based on the tag
 def get_story_in_type(type_link):

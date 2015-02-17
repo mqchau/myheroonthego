@@ -41,11 +41,43 @@ def extract_art_list(html_string):
 	soup = BeautifulSoup(html_string)
 	all_art = soup.find_all('table', id='heroHolder')
 	all_art_info = map(lambda x: {
-		'imglink': x.find('img')['src'] if x.find('img') is not None else '' 
-		,'artlink' : x.find('a')['href'] if x.find('a') is not None else ''
-		,'name': reduce(lambda x,y: (strip_tags(x.__str__()).strip() if type(x) is not str else x) + ' ' + strip_tags(y.__str__()).strip(), x.find_all('span'))
+		'imglink': DEFAULT_IMG_PREFIX + x.find('img')['src'] if x.find('img') is not None else '' 
+		,'artlink' : strip_artpiece_link(x.find('a')['href']) if x.find('a') is not None else ''
+		,'name': extract_art_name(x)
+		,'artist': extract_art_artist(x)
+		,'cap': extract_art_cap(x)
 		}, all_art)
 	return all_art_info
+
+def strip_artpiece_link(orig):
+	m = re.search("art=(.+)$", orig)
+	if m is None:
+		print orig
+		return orig
+	else:
+		return m.group(1)
+
+def extract_art_name(x):
+	name = ''
+	span = filter(lambda y: 'class' in y.attrs and 'heroName' in y['class'], x.find_all('span'))
+	if len(span) > 0:
+		name = str(span[0].contents[0])
+	return name
+
+def extract_art_artist(x):
+	name = ''
+	span = filter(lambda y: 'class' in y.attrs and 'heroArtist' in y['class'], x.find_all('span'))
+	if len(span) > 0:
+		name = str(span[0].contents[0])
+	return name
+
+def extract_art_cap(x):
+	name = ''
+	span = filter(lambda y: 'class' in y.attrs and 'heroCap' in y['class'], x.find_all('span'))
+	if len(span) > 0:
+		name = str(span[0].contents[0])
+	return name
+
 
 #PUBLIC: get info of a particular artwork
 def get_artwork(artkey):
