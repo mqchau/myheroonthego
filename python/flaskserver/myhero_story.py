@@ -32,6 +32,7 @@ def get_story_type_description():
 	soup = BeautifulSoup(r.text)
 	all_essayttl = soup.find_all("essayttl")
 	all_essayttl_parent = map(lambda x: x.parent, all_essayttl)
+	all_essayttl_parent = filter(lambda x: re.search("page\.asp", x['href']), all_essayttl_parent)
 	all_essayttl_profile = map(extract_type_description, all_essayttl_parent)
 	return all_essayttl_profile
 
@@ -39,8 +40,16 @@ def extract_type_description(x):
 	return {
 		"type": x.find("essayttl").contents[0]
 		,"description": x.contents[-1].strip()
-		,"tag": x['href'] 
+		,"tag": strip_story_category_link(x['href'])
 		}
+
+def strip_story_category_link(orig):
+	m = re.search("dir=(.+)$", orig)
+	if m is None:
+		print orig
+		return orig
+	else:
+		return m.group(1)
 
 #PUBLIC: show the text and images in a story
 def get_story_content(story_link):
