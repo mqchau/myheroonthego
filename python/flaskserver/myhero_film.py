@@ -56,6 +56,8 @@ def get_movie(movie_name):
 
 def extract_movie_info(html_string):
 	soup = BeautifulSoup(html_string)
+	if soup.find('source') is None:
+		return {}
 	title = ''; author = '';
 	spans = soup.find_all('span')
 	for span in spans:
@@ -89,6 +91,6 @@ if __name__ == "__main__":
 			pp.pprint(movie_list)
 		elif int(args.debug) == 1:
 			#get the detail of a movie
-			movie = get_movie('Bay Cat')
+			movie = get_movie('sulai')
 			pp.pprint(movie)
 

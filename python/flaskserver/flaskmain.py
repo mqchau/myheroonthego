@@ -37,5 +37,9 @@ def return_artwork(art_key):
 def return_movie_lit(page_num):
 	return json.dumps(myhero_film.get_movie_list(page_num))
 
+@app.route('/movie/<movie_key>')
+def return_movie(movie_key):
+	return json.dumps(myhero_film.get_movie(movie_key))
+
 if __name__ == "__main__":
 	app.run(host='0.0.0.0')
