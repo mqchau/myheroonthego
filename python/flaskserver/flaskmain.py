@@ -26,5 +26,9 @@ def return_art_medium():
 def return_art_list(art_category, page_num=1):
 	return json.dumps(myhero_art.get_art_list(art_category, page_num))
 
+@app.route('/art/<art_key>')
+def return_artwork(art_key):
+	return json.dumps(myhero_art.get_artwork(art_key))
+
 if __name__ == "__main__":
 	app.run(host='0.0.0.0')

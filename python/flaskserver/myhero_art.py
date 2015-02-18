@@ -75,17 +75,17 @@ def extract_artwork(html_string):
 	spans = x.find_all('span')
 	title = ''; artist = ''; caption = ''; description = '';
 	for span in spans:
-		if span['class'] == 'gTitle':	
-			title = span.contents[0].__str__().strip()
-		elif span['class'] == 'gArtist':
-			artist = span.contents[0].__str__().strip()
-		elif span['class'] == 'gCaption':
-			caption = span.contents[0].__str__().strip()
-		elif span['class'] == 'gDescription':
-			description = span.contents[0].__str__().strip()
+		if span['class'] == 'gTitle' and len(span.contents) > 0:	
+			title = strip_tags(span.__str__()).strip()
+		elif span['class'] == 'gArtist' and len(span.contents) > 0:
+			artist = strip_tags(span.__str__()).strip()
+		elif span['class'] == 'gCaption' and len(span.contents) > 0:
+			caption = strip_tags(span.__str__()).strip()
+		elif span['class'] == 'gDescription' and len(span.contents) > 0:
+			description = strip_tags(span.__str__()).strip()
 
 	art_info = {
-		'imglink': x.find('img')['src'] if x.find('img') is not None else '' 
+		'imglink': DEFAULT_IMG_PREFIX + x.find('img')['src'] if x.find('img') is not None else '' 
 		,'title': title, 'artist': artist, 'caption': caption, 'description': description
 		} 
 	return art_info
@@ -109,5 +109,5 @@ if __name__ == "__main__":
 			pp.pprint(art_list)
 		elif int(args.debug) == 2:
 			#get detail of a particular artwork	
-			artwork = get_artwork('nate_visualizes')
+			artwork = get_artwork('vlad7')
 			pp.pprint(artwork)
