@@ -16,9 +16,9 @@ def extract_movie_list(html_string):
 	soup = BeautifulSoup(html_string)
 	all_movies = soup.find_all('table', id='heroHolder')
 		
-	return map(extract_movie_info, all_movies)
+	return map(extract_many_movie_info, all_movies)
 
-def extract_movie_info(movie):
+def extract_many_movie_info(movie):
 	dict1 = extract_name_caption(movie)
 	dict2 = extract_link(movie)
 	return dict(dict1.items() + dict2.items())
@@ -37,9 +37,17 @@ def extract_name_caption(movie):
 
 def extract_link(x):
 	return {
-		'imglink' : x.find('img')['src'] if x.find('img') is not None else '' 
-		,'movielink' : x.find('a')['href'] if x.find('a') is not None else ''
+		'imglink' : DEFAULT_IMG_PREFIX + x.find('img')['src'] if x.find('img') is not None else '' 
+		,'movielink' : strip_movie_link(x.find('a')['href']) if x.find('a') is not None else ''
 		}
+
+def strip_movie_link(orig):
+	m = re.search("film=(.+)&res=", orig)
+	if m is None:
+		print orig
+		return orig
+	else:
+		return m.group(1)
 
 #PUBLIC: get detail of a movie
 def get_movie(movie_name):
