@@ -81,9 +81,9 @@ def extract_story_content(html_string):
 	for i in soup.find_all('center'):
 		if i.find('table') is not None:
 			main_content = i
+                        break
 	if main_content is None:
 		return {}
-	pp.pprint(main_content)
 	table = main_content 
 	all_content = decode_story_content_td(table)
 	return {
