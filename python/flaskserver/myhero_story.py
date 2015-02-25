@@ -77,7 +77,14 @@ def extract_story_content(html_string):
 		elif 'authorCat' in i['class']:
 			authorCat = i.contents[0]
 	#find the content
-	table = soup.find('center').find('table').find('td')
+	main_content = None
+	for i in soup.find_all('center'):
+		if i.find('table') is not None:
+			main_content = i
+	if main_content is None:
+		return {}
+	pp.pprint(main_content)
+	table = main_content 
 	all_content = decode_story_content_td(table)
 	return {
 		'heroCat': heroCat,
@@ -152,6 +159,6 @@ if __name__ == "__main__":
 			pp.pprint(all_stories)
 		elif int(args.debug) == 5:
 			#get story content of a specific hero
-			story_content = get_story_content('LAKHDAR')
+			story_content = get_story_content('kofi_annan')
 			pp.pprint(story_content)
 	
