@@ -21,15 +21,16 @@ def extract_story_info(html_string):
 		'imglink' : DEFAULT_IMG_PREFIX + x.find('img')['src'] if x.find('img') is not None else '' 
 		,'storylink' : strip_story_link(x.find('a')['href'])
 		,'name' : strip_tags(x.find('strong').__str__())
-		,'description': x.find('font').contents[0] if len(x.find('font').contents) > 0 else ''
+		,'description': extract_string(x.find('font').contents[0]) if len(x.find('font').contents) > 0 else ''
 		}, all_td_herotext)
+	all_story_info = filter(lambda x: x['storylink'] is not None, all_story_info)
 	return all_story_info 
 
 def strip_story_link(orig):
 	m = re.search("hero=(.+)$", orig)
 	if m is None:
-		print orig
-		return orig
+		print 'Can\'t extract story link ' + orig
+		return None 
 	else:
 		return m.group(1)
 
@@ -41,20 +42,21 @@ def get_story_type_description():
 	all_essayttl_parent = map(lambda x: x.parent, all_essayttl)
 	all_essayttl_parent = filter(lambda x: re.search("page\.asp", x['href']), all_essayttl_parent)
 	all_essayttl_profile = map(extract_type_description, all_essayttl_parent)
+	all_essayttl_profile = filter(lambda x: x['tag'] is not None, all_essayttl_profile)
 	return all_essayttl_profile
 
 def extract_type_description(x):
 	return {
 		"type": x.find("essayttl").contents[0]
-		,"description": x.contents[-1].strip()
+		,"description": strip_tags(x.contents[-1]).strip()
 		,"tag": strip_story_category_link(x['href'])
 		}
 
 def strip_story_category_link(orig):
 	m = re.search("dir=(.+)$", orig)
 	if m is None:
-		print orig
-		return orig
+		print 'Can\' extract story category link : ' + orig
+		return None 
 	else:
 		return m.group(1)
 
@@ -81,7 +83,7 @@ def extract_story_content(html_string):
 	for i in soup.find_all('center'):
 		if i.find('table') is not None:
 			main_content = i
-                        break
+			break
 	if main_content is None:
 		return {}
 	table = main_content 

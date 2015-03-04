@@ -24,3 +24,9 @@ def save_html(file_name, html_string):
 
 def remove_non_ascii(text):
 	return ''.join(i for i in text if ord(i)<128)
+
+def extract_string(text):
+    try:
+        return strip_tags(str(text)).strip()
+    except Exception as e:
+        return '' 
