@@ -70,14 +70,19 @@ def extract_story_content(html_string):
 	#find the title
 	title_area = soup.find('div', id='titleArea')
 	heroCat = ''; nameCat = ''; authorCat = '';
-	for i in title_area.find_all('div'):
-		#print str(i) + "  " + str(i.attrs['class'])
-		if 'heroCat' in i['class']:
-			heroCat = i.contents[0]
-		elif 'nameCat' in i['class']:
-			nameCat = i.contents[0]
-		elif 'authorCat' in i['class']:
-			authorCat = i.contents[0]
+	if title_area is not None:
+		for i in title_area.find_all('div'):
+			#print str(i) + "  " + str(i.attrs['class'])
+			if 'heroCat' in i['class']:
+				heroCat = i.contents[0] if len(i.contents) > 0 else ""
+			elif 'nameCat' in i['class']:
+				nameCat = i.contents[0] if len(i.contents) > 0 else ""
+			elif 'authorCat' in i['class']:
+				authorCat = i.contents[0] if len(i.contents) > 0 else ""
+	else:
+		heroCat = ""
+		nameCat = ""
+		authorCat = ""
 	#find the content
 	main_content = None
 	for i in soup.find_all('center'):
@@ -116,7 +121,7 @@ def extract_img_link(img_soup):
 	if len(table_parent) > 0: 
 		parent_table = table_parent[0]
 		if parent_table.find('font') is not None:
-			description = strip_tags(parent_table.find('font').__str__()).strip()
+			description = extract_string(parent_table.find('font'))
 	if description is None:
 		return {
 			'kind': 'image',
@@ -131,7 +136,7 @@ def extract_img_link(img_soup):
 
 
 def extract_p_content(p_soup):
-	raw_content = strip_tags(p_soup.__str__()).strip()
+	raw_content = extract_string(p_soup)
 	if len(raw_content) > 0:
 		return {
 			'kind': 'text',
