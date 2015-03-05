@@ -58,11 +58,14 @@ def strip_artpiece_link(orig):
 		return m.group(1)
 
 def extract_by_spanclass(x, classname):
-	name = ''
-	span = filter(lambda y: 'class' in y.attrs and classname in y['class'], x.find_all('span'))
-	if len(span) > 0:
-		name = str(strip_tags(span[0].contents[0].encode('utf8')))
-	return name
+    try:
+        name = ''
+        span = filter(lambda y: 'class' in y.attrs and classname in y['class'], x.find_all('span'))
+        if len(span) > 0:
+            name = str(strip_tags(span[0].contents[0].encode('utf8')))
+        return name
+    except:
+        return ''
 
 #PUBLIC: get info of a particular artwork
 def get_artwork(artkey):

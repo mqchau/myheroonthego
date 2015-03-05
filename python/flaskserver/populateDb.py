@@ -1,8 +1,12 @@
 from pymongo import MongoClient
 from myhero_story import *
+from myhero_art import *
+from myhero_film import *
 import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
+#list of art that won't work
+prohibited_art_work = ['911']
 
 if __name__ == "__main__":
     client = MongoClient()
@@ -16,7 +20,10 @@ if __name__ == "__main__":
     collection_to_populate = []
     #collection_to_populate.append('story_category')
     #collection_to_populate.append('story_list')
-    collection_to_populate.append('story_info')
+    #collection_to_populate.append('story_info')
+    #collection_to_populate.append('art_medium')
+    #collection_to_populate.append('art_list')
+    #collection_to_populate.append('art_info')
 
     #delete the collections that we're repopulating
     for one_collection in collection_to_populate:
@@ -68,5 +75,52 @@ if __name__ == "__main__":
                 pp.pprint(story_content)
                 print "ERROR: " + str(e)
             print "got story content of " + one_story_link
+
+    #art medium
+    if 'art_medium' in collection_to_populate:
+        all_art_medium = get_art_medium_list()
+        client.db.art_medium.insert(all_art_medium)
+
+    #art list
+    if 'art_list' in collection_to_populate:
+        all_art_medium = client.db.art_medium.find()
+        for one_art_medium in all_art_medium:
+            art_link = one_art_medium['artlink']
+            art_list = []
+            counter = 1
+            while True:
+                temp_list = get_art_list(art_link, counter)
+                if len(temp_list) == 0:
+                    break
+                else:
+                    art_list.extend(temp_list)
+                    counter = counter+1
+            data_to_store = {
+                "artlink": art_link,
+                "arts": filter(lambda x: x['artlink'] not in prohibited_art_work, art_list)
+                }
+            try:
+                client.db.art_list.insert(data_to_store)
+            except Exception as e:
+                pp.pprint(story_content)
+                print "ERROR: " + str(e)
+            print "got art list of " + art_link 
+
+    #art info
+    if 'art_info' in collection_to_populate:
+        all_art_list = list(client.db.art_list.find())
+        for one_art_list in all_art_list:
+            for one_art in one_art_list['arts']:
+                print "getting art info of " + one_art['artlink'] + ' in ' + one_art_list['artlink']
+                art_info = get_artwork(one_art['artlink'])
+                data_to_store = {
+                        "artlink": one_art['artlink'],
+                        "content": art_info
+                        }
+                try:
+                    client.db.art_info.insert(data_to_store)
+                except Exception as e:
+                    pp.pprint(story_content)
+                    print "ERROR: " + str(e)
 
 
