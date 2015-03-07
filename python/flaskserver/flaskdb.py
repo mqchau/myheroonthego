@@ -1,10 +1,21 @@
 from flask import Flask
-import myhero_story, myhero_art, myhero_film, json
+import myhero_story, myhero_art, myhero_film, json, argparse, pprint
 from pymongo import MongoClient
 
 client = MongoClient()
 
 app = Flask(__name__)
+
+def trim_objectid_list(obj_list):
+	return map(trim_objectid, obj_list)
+
+def trim_objectid(obj):
+	new_dict = {}
+	for key in obj:
+		if key != '_id':
+			new_dict[key] = obj[key]
+
+	return new_dict
 
 @app.route('/')
 def hello_world():
@@ -46,4 +57,16 @@ def return_movie(movie_key):
 	return json.dumps(trim_objectid(dict(client.db.movie_list.find({'movielink': movie_key})[0])))
 
 if __name__ == "__main__":
-	app.run(host='0.0.0.0')
+	pp = pprint.PrettyPrinter(indent=3)
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--debug", required=True, help="Debug option")
+
+	args = parser.parse_args()
+
+	if "debug" in args:
+		if int(args.debug) == 0:
+			print(return_movie_list())
+		elif int(args.debug) == 1:
+			print return_movie('Mailbox')
+		else:
+			app.run(host='0.0.0.0', port=5001)

@@ -87,7 +87,7 @@ if __name__ == "__main__":
 	if "debug" in args:
 		if int(args.debug) == 0:
 			#get the list all movies by page number
-			movie_list = get_movie_list(2)
+			movie_list = get_movie_list(1)
 			pp.pprint(movie_list)
 		elif int(args.debug) == 1:
 			#get the detail of a movie

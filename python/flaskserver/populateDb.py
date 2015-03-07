@@ -24,6 +24,8 @@ if __name__ == "__main__":
     #collection_to_populate.append('art_medium')
     #collection_to_populate.append('art_list')
     #collection_to_populate.append('art_info')
+    collection_to_populate.append('movie_list')
+    collection_to_populate.append('movie_info')
 
     #delete the collections that we're repopulating
     for one_collection in collection_to_populate:
@@ -123,4 +125,31 @@ if __name__ == "__main__":
                     pp.pprint(story_content)
                     print "ERROR: " + str(e)
 
+    #movie list
+    if 'movie_list' in collection_to_populate:
+        #construct the structure for five movies
+        movie_list_to_add = [
+                { 'caption': "A young girl's weary and exhausting day is suddenly shaken by a strange, yet familiar sound. Her curiosity propels her deeper and deeper, and she quickly finds her pursuit has taken her much further than she'd realized.However, her curiosity may lead her where she's not prepared to go.",
+                    'movielink': 'Mailbox',
+                    'name': "The mailbox"
+                    },
+                { 'caption': "The Boy at the Signal",
+                    'movielink': "vatsalya foundation",
+                    'name': "TheboyattheSignal"
+                    },
+                { 'caption': "Aaron Machado rescues sea animals in danger.",
+                    'movielink': "saviourofseas",
+                    'name': "SaviouroftheSea"
+                    }, 
+                { 'caption': "Square on 31st (2010) is the story of a lady, who has just moved from Seoul to New York City. It deals with the stress of culture shock, and the journey of surmounting obstacles in a larger cultural sphere.",
+                    'movielink': "Square On 31st",
+                    'name': "Squareon31st"
+                    }, 
+                { 'caption': "High school junior Daniel Nemroff from Wynnewood, Pennsylvania set out to show us what education might look like in the future. In \"Technology in Education: A Future Classsroom,\" Daniel replaces standard testing with a conceptual example of Objective-Based Learning where students work independently, at their own pace, and are motived by achieving a virtual objective.",
+                    'movielink': "techinclassroom14",
+                    'name' : "Technology in Education: A Future Classroom"
+                    } 
+                ]
 
+        for one_movie in movie_list_to_add:
+            client.db.movie_list.insert(one_movie)
